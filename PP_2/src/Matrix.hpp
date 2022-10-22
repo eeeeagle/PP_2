@@ -8,7 +8,9 @@
 #include <vector>
 #include <chrono>
 #include <omp.h>
-#define PROC 10
+#include <windows.h>
+
+#define TIMEOUT 2000
 
 typedef std::chrono::duration<double> seconds;
 typedef std::chrono::high_resolution_clock Time;
@@ -80,17 +82,18 @@ void read_file(Matrix<T>& matrix, const std::string& filepath)
 			if (iter->size() != size)
 				throw std::logic_error("Matrix dimmension mismatch in file \"" + filepath + '\"');
 		}
+		return;
 	}
 	catch (std::ios_base::failure const& ex)
 	{
 		std::cout << "READING ERROR: " << ex.what() << '\n';
-		_exit(EXIT_FAILURE);
 	}
 	catch (std::logic_error const& ex)
 	{
 		std::cout << "LOGIC ERROR: " << ex.what() << '\n';
-		_exit(EXIT_FAILURE);
 	}
+	Sleep(TIMEOUT);
+	_exit(EXIT_FAILURE);
 }
 
 template<typename T>
@@ -120,6 +123,7 @@ void write_file(const Matrix<T>& matrix, const double& runtime, const std::strin
 	catch (std::ios_base::failure const& ex)
 	{
 		std::cout << "WRITING ERROR: " << ex.what() << '\n';
+		Sleep(TIMEOUT);
 		_exit(EXIT_FAILURE);
 	}
 }

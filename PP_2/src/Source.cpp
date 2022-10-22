@@ -1,6 +1,7 @@
 #include "Matrix.hpp"
 #include <conio.h>
 
+
 bool is_exists(const std::string& name) 
 {
 	struct stat buffer;
@@ -25,7 +26,7 @@ unsigned long str_to_ulong(const std::string& str)
 		std::cout << "OUT OF RANGE: N = " << std::string(str) << "\n\n"
 			<< ex.what() << '\n';
 	}
-	system("pause > nul");
+	Sleep(TIMEOUT);
 	_exit(EXIT_FAILURE);
 }
 
@@ -33,21 +34,20 @@ int main(int argc, char** argv)
 {
 	system("title Parallel Programming [Lab ¹2]");
 
-	if (argc > 7 || (argc == 2 && std::string(argv[1]) == "-help"))
+	if (argc > 5 || (argc == 2 && std::string(argv[1]) == "-help"))
 	{
-		std::cout	<< "Locate paths to matrix files in arguments, to output file (optional) and specify number of threads (optional)\n"
-					<< "Use [-o] before <output_path> and [-t] before <threads>\n\n"
-					<< "EXAMPLE:\n"
-					<< "    .../PP_2.exe <matrix_1_path> <matrix_2_path> -o <output_path> -t <threads>\n\n";
-		system("pause > nul");
-        _exit(EXIT_FAILURE);
+		std::cout << "Locate paths to matrix files in arguments, to output file and specify number of threads\n\n"
+			<< "EXAMPLE:\n"
+			<< "    .../PP_2.exe <matrix_1_path> <matrix_2_path> <output_path> <threads>\n\n";
+		Sleep(TIMEOUT);
+		_exit(EXIT_FAILURE);
 	}
 
 	std::string str[3];
 	unsigned long threads = 10;
 	try
 	{
-		if (argc > 1)
+		if (argc == 5)
 		{
 			if (!is_exists(argv[1]))
 				throw std::invalid_argument(std::to_string(1) + "]: " + argv[1] + " (File doesn't exist)");
@@ -56,6 +56,9 @@ int main(int argc, char** argv)
 			if (!is_exists(argv[2]))
 				throw std::invalid_argument(std::to_string(2) + "]: " + argv[2] + " (File doesn't exist)");
 			str[1] = argv[2];
+
+			str[2] = argv[3];
+			threads = str_to_ulong(argv[4]);
 		}
 		else
 		{
@@ -63,18 +66,7 @@ int main(int argc, char** argv)
 			std::cin >> str[0];
 			std::cout << "Locate path to matrix B: ";
 			std::cin >> str[1];
-		}
 
-		if (argc >= 5 && (std::string(argv[3]) != "-o" && std::string(argv[3]) != "-t"))
-			throw std::invalid_argument("INVALID MODE: " + std::string(argv[3]));
-
-		if (argc == 7 && (std::string(argv[5]) != "-o" && std::string(argv[5]) != "-t"))
-			throw std::invalid_argument("INVALID MODE: " + std::string(argv[5]));
-
-		if ((argc >= 5 && std::string(argv[3]) == "-o") || (argc == 7 && std::string(argv[5]) == "-o"))
-			str[2] = (std::string(argv[3]) == "-o" ? argv[4] : argv[6]);
-		else
-		{
 			std::cout << "\nLocate path to output file? (Y/N)";
 			int key;
 			do
@@ -90,14 +82,9 @@ int main(int argc, char** argv)
 			}
 			else
 				str[2] = "output.txt";
-		}
 
-		if ((argc >= 5 && std::string(argv[3]) == "-t") || (argc == 7 && std::string(argv[5]) == "-t"))
-			threads = str_to_ulong(std::string(argv[3]) == "-t" ? argv[4] : argv[6]);
-		else
-		{
 			std::cout << "\nSpecify threads number? (Y/N)";
-			int key;
+			int key = 0;
 			do
 			{
 				key = _getch();
@@ -117,14 +104,14 @@ int main(int argc, char** argv)
 	{
 		std::cout << std::string("INVALID ARGUMENT [") << ex.what() << '\n'
 			<< "Use [.../PP_2.exe -help] to get more info\n";
-		system("pause > nul");
+		Sleep(TIMEOUT);
 		_exit(EXIT_FAILURE);
 	}
 	catch (std::out_of_range const& ex)
 	{
 		std::cout	<< ex.what() << "\n\n"
 					<< "Threads must be > 2\n\n";
-		system("pause > nul");
+		Sleep(TIMEOUT);
 		exit(EXIT_FAILURE);
 	}
 
@@ -146,6 +133,6 @@ int main(int argc, char** argv)
 		std::cout << ' ';
 	
 	std::cout << "\rSaved matrix in file [" << str[2] << "]\n";
-	system("pause > nul");
+	Sleep(TIMEOUT);
 	return 0;
 }
