@@ -68,7 +68,7 @@ int main(int argc, char** argv)
 			std::cin >> str[1];
 
 			std::cout << "\nLocate path to output file? (Y/N)";
-			int key;
+			int key = 0;
 			do
 			{
 				key = _getch();
@@ -84,7 +84,7 @@ int main(int argc, char** argv)
 				str[2] = "output.txt";
 
 			std::cout << "\nSpecify threads number? (Y/N)";
-			int key = 0;
+			key = 0;
 			do
 			{
 				key = _getch();
