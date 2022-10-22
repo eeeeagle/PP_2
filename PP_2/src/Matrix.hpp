@@ -8,7 +8,7 @@
 #include <vector>
 #include <chrono>
 #include <omp.h>
-
+#define PROC 10
 
 typedef std::chrono::duration<double> seconds;
 typedef std::chrono::high_resolution_clock Time;
@@ -18,7 +18,8 @@ using Matrix = std::vector<std::vector<T>>;
 
 
 template<typename T>
-double multiply_matrix(const Matrix<T>&a, const Matrix<T>& b, Matrix<T>& c) /* Return value: runtime of multiply matrix*/
+double multiply_matrix(const Matrix<T>&a, const Matrix<T>& b, Matrix<T>& c, const int threads_num)
+/* Return value: runtime of multiply matrix*/
 {
 	const size_t n = a.size();
 	const size_t m = a.begin()->size();
@@ -27,12 +28,11 @@ double multiply_matrix(const Matrix<T>&a, const Matrix<T>& b, Matrix<T>& c) /* R
 	c = Matrix<T>(n, std::vector<T>(p, 0));
 
 	int threads;
-	omp_set_num_threads(10);
+	omp_set_num_threads(threads_num);
 	auto start_time = Time::now();
 #pragma omp parallel shared(threads)
 	{
 		threads = omp_get_num_threads();
-
 #pragma omp for    
 		for (int j = 0; j < p; ++j)
 		{
@@ -44,7 +44,6 @@ double multiply_matrix(const Matrix<T>&a, const Matrix<T>& b, Matrix<T>& c) /* R
 		}
 	}
 	auto end_time = Time::now();
-
 	return seconds(end_time - start_time).count();
 }
 
