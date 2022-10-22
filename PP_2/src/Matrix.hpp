@@ -27,7 +27,7 @@ double multiply_matrix(const Matrix<T>&a, const Matrix<T>& b, Matrix<T>& c) /* R
 	c = Matrix<T>(n, std::vector<T>(p, 0));
 
 	int threads;
-	omp_set_num_threads(4);
+	omp_set_num_threads(10);
 	auto start_time = Time::now();
 #pragma omp parallel shared(threads)
 	{
