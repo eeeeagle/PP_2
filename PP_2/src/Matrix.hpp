@@ -83,7 +83,7 @@ void read_file(Matrix<T>& matrix, const std::string& filepath)
 		{
 			throw std::logic_error("No matrix in file \"" + filepath + '\"');
 		}
-		
+
 		const size_t size = matrix.begin()->size();
 		for (auto iter = matrix.begin() + 1; iter != matrix.end(); iter++)
 		{
@@ -128,7 +128,7 @@ void write_file(const Matrix<T>& matrix, const std::string& filepath)
 	}
 }
 
-void add_file(const size_t& volume, const double& runtime, const std::string& filepath)
+void add_matrix(const size_t& volume, const double& runtime, const std::string& filepath)
 {
 	try
 	{
