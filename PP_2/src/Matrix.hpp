@@ -8,9 +8,6 @@
 #include <vector>
 #include <chrono>
 #include <omp.h>
-#include <windows.h>
-
-#define TIMEOUT 2000
 
 typedef std::chrono::duration<double> seconds;
 typedef std::chrono::high_resolution_clock Time;
@@ -26,6 +23,17 @@ double multiply_matrix(const Matrix<T>&a, const Matrix<T>& b, Matrix<T>& c, cons
 	const size_t n = a.size();
 	const size_t m = a.begin()->size();
 	const size_t p = b.begin()->size();
+
+	try
+	{
+		if (n != p)
+			throw std::logic_error("Multiplication is impossible: mismatch in matrix A rows and matrix B columns");
+	}
+	catch (const std::logic_error& ex)
+	{
+		std::cout << ex.what() << '\n';
+		_exit(EXIT_FAILURE);
+	}
 
 	c = Matrix<T>(n, std::vector<T>(p, 0));
 
@@ -92,12 +100,11 @@ void read_file(Matrix<T>& matrix, const std::string& filepath)
 	{
 		std::cout << "LOGIC ERROR: " << ex.what() << '\n';
 	}
-	Sleep(TIMEOUT);
 	_exit(EXIT_FAILURE);
 }
 
 template<typename T>
-void write_file(const Matrix<T>& matrix, const double& runtime, const std::string& filepath)
+void write_file(const Matrix<T>& matrix, const unsigned& runtime, const std::string& filepath)
 {
 	try
 	{
@@ -105,25 +112,26 @@ void write_file(const Matrix<T>& matrix, const double& runtime, const std::strin
 		file.exceptions(std::ofstream::badbit);
 		file.open(filepath);
 
-		for (auto iter_ = matrix.begin(); iter_ != matrix.end(); iter_++)
+		for (auto i = matrix.begin(); i != matrix.end(); i++) /* i - iterator for rows vector*/
 		{
-			for (auto iter = iter_->begin(); iter != iter_->end(); iter++)
+			for (auto j = i->begin(); j != i->end(); j++) /* j - iterator for i vector */
 			{
-				file << *iter;
+				file << *j;
 				file << ' ';
 			}
-			file << '\n';
+			if(i != matrix.end() - 1)
+				file << '\n';
 		}
-		file << '\n';
+
+		file << "\n\n";
 		file << "Runtime: " << runtime << " seconds\n";
-		file << " Volume: " << (matrix.size() * matrix.begin()->size()) << '\n';
+		file << " Volume: " << (matrix.size() * matrix.begin()->size());
 
 		file.close();
 	}
 	catch (std::ios_base::failure const& ex)
 	{
 		std::cout << "WRITING ERROR: " << ex.what() << '\n';
-		Sleep(TIMEOUT);
 		_exit(EXIT_FAILURE);
 	}
 }
